@@ -5,12 +5,13 @@ import { ApplicationProvider } from '@ui-kitten/components';
 
 import store from './store';
 import HomeScreen from './screens/HomeScreen';
+import BoardScreen from './screens/BoardScreen';
 
 const App = () => {
   return (
     <Provider store={store}>
       <ApplicationProvider {...eva} theme={eva.dark}>
-        <HomeScreen />
+        <BoardScreen />
       </ApplicationProvider>
     </Provider>
   );
