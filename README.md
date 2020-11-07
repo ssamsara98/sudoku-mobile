@@ -1,2 +1,2 @@
-# sudoku-mobile
+# Sudoku
 Sudoku Game
