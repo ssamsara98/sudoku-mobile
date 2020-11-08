@@ -1,4 +1,4 @@
-const { USER__SET_NAME, USER__CLEAR_NAME } = require('../actions/userType');
+const { PLAYER__CLEAR_NAME, PLAYER__SET_NAME } = require('../actions/playerType');
 
 const initialState = {
   name: '',
@@ -14,9 +14,9 @@ function clearName(state) {
 
 const userReducer = (state = initialState, action) => {
   switch (action.type) {
-    case USER__SET_NAME:
-      return setName(state, action);
-    case USER__CLEAR_NAME:
+    case PLAYER__SET_NAME:
+      return setName(state, action.payload);
+    case PLAYER__CLEAR_NAME:
       return clearName(state);
     default:
       return state;

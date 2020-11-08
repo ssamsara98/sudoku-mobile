@@ -1,14 +1,14 @@
-import { USER__CLEAR_NAME, USER__SET_NAME } from './userType';
+import { PLAYER__CLEAR_NAME, PLAYER__SET_NAME } from './playerType';
 
 export const setName = (name) => {
   return {
-    type: USER__SET_NAME,
+    type: PLAYER__SET_NAME,
     payload: { name },
   };
 };
 
 export const clearName = () => {
   return {
-    type: USER__CLEAR_NAME,
+    type: PLAYER__CLEAR_NAME,
   };
 };

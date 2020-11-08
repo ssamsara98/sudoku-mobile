@@ -1,10 +1,10 @@
 import { applyMiddleware, combineReducers, createStore } from 'redux';
 import thunk from 'redux-thunk';
 
-import userReducer from './stores/reducers/userReducer';
+import playerReducer from './stores/reducers/playerReducer';
 
 const rootReducer = combineReducers({
-  user: userReducer,
+  player: playerReducer,
 });
 
 const store = createStore(rootReducer, applyMiddleware(thunk));

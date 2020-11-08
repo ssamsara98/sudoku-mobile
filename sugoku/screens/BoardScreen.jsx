@@ -1,6 +1,7 @@
 import { Button, Input, Layout, Text } from '@ui-kitten/components';
 import React, { useEffect, useState } from 'react';
 import { Alert, StyleSheet } from 'react-native';
+import { useSelector } from 'react-redux';
 import sugokuApi from '../apis/sugokuApi';
 
 // import sudoku from '../dummy-data';
@@ -31,39 +32,27 @@ const styles = StyleSheet.create({
   submitBtn: {
     marginVertical: 25,
   },
-  nameAndDifficulty: {
-    flex: 1,
-    justifyContent: 'center',
-    alignItems: 'flex-start',
-    width: 250,
-  },
-  name: {
-    justifyContent: 'center',
-    alignItems: 'center',
-    marginBottom: 50,
-  },
-  difficulty: {
-    justifyContent: 'center',
-    alignItems: 'center',
-    width: '100%',
-  },
-  difficultyButton: {
-    width: 200,
-    marginBottom: 15,
-  },
 });
 
-const BoardScreen = () => {
+const BoardScreen = (props) => {
+  const {
+    navigation,
+    route: { params },
+  } = props;
+
   const [sudoku, setSudoku] = useState({ board: [[]] });
   const [board, setBoard] = useState([[]]);
   const [isLoading, setIsLoading] = useState(true);
+  const [isSolved, setIsSolved] = useState(false);
+
+  const playerName = useSelector((state) => state.player.name);
 
   useEffect(() => {
     async function fetchSudoku() {
       const result = await sugokuApi({
         url: '/board',
         method: 'GET',
-        params: { difficulty: 'easy' },
+        params: { difficulty: params.difficulty },
       });
 
       setSudoku(result.data);
@@ -71,6 +60,10 @@ const BoardScreen = () => {
     }
     fetchSudoku();
   }, []);
+
+  useEffect(() => {
+    return () => {};
+  }, [playerName]);
 
   useEffect(() => {
     const parsedBoard = JSON.parse(JSON.stringify(sudoku.board));
@@ -87,9 +80,6 @@ const BoardScreen = () => {
     const body = { board };
     const data = encodeParams(body);
 
-    console.log(body);
-    console.log(data);
-
     try {
       const solution = await sugokuApi({
         url: '/validate',
@@ -99,9 +89,15 @@ const BoardScreen = () => {
       });
 
       Alert.alert('Sugoku Validation', solution.data.status);
+
+      if (solution.data.status === 'solved') setIsSolved(true);
     } catch (err) {
       console.warn(err);
     }
+  }
+
+  async function handleSubmit() {
+    navigation.navigate('Finish');
   }
 
   async function handleSolveIt() {
@@ -120,6 +116,8 @@ const BoardScreen = () => {
       setBoard(parsedBoard);
 
       Alert.alert('Sugoku Validation', solution.data.status);
+
+      if (solution.data.status === 'solved') setIsSolved(true);
     } catch (err) {
       console.warn(err);
     }
@@ -129,6 +127,7 @@ const BoardScreen = () => {
     <Layout style={styles.root}>
       <Layout style={styles.title}>
         <Text>Board</Text>
+        <Text>{playerName}</Text>
       </Layout>
 
       {isLoading ? (
@@ -146,6 +145,7 @@ const BoardScreen = () => {
                         textStyle={styles.box}
                         size="small"
                         disabled={isDisable}
+                        keyboardType="number-pad"
                         value={`${col}`}
                         key={colIdx}
                         onChangeText={(nextValue) => onBoardChange(rowIdx, colIdx, nextValue)}
@@ -157,13 +157,17 @@ const BoardScreen = () => {
             })}
           </Layout>
           <Layout style={styles.submitBtn}>
-            <Button appearance="outline" status="success" onPress={handleApply}>
-              {(evaProps) => <Text {...evaProps}>Apply</Text>}
+            <Button
+              appearance="outline"
+              status={isSolved ? 'success' : 'warning'}
+              onPress={isSolved ? handleSubmit : handleApply}
+            >
+              {(evaProps) => <Text {...evaProps}>{isSolved ? 'Submit' : 'Apply'}</Text>}
             </Button>
             <Button
               style={{ marginTop: 15 }}
               appearance="outline"
-              status="success"
+              status="info"
               onPress={handleSolveIt}
             >
               {(evaProps) => <Text {...evaProps}>Just solve it!</Text>}
