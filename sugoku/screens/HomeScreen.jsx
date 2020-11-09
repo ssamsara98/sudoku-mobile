@@ -3,7 +3,7 @@ import { StyleSheet, TouchableWithoutFeedback } from 'react-native';
 import { Button, Icon, Input, Layout, Text } from '@ui-kitten/components';
 import { useDispatch, useSelector } from 'react-redux';
 
-import { setName } from '../stores/actions/playerAction';
+import { setName, clearName } from '../stores/actions/playerAction';
 
 const styles = StyleSheet.create({
   layout: {
@@ -28,8 +28,6 @@ const styles = StyleSheet.create({
     width: '100%',
   },
   difficultyButton: {
-    // width: '100%',
-    // height: 100,
     width: 200,
     marginBottom: 15,
   },
@@ -51,6 +49,8 @@ const HomeScreen = (props) => {
   const renderIcon = (iconProps) => (
     <TouchableWithoutFeedback
       onPress={() => {
+        console.log(iconProps);
+        dispatch(clearName());
         setPlayerName('');
       }}
     >

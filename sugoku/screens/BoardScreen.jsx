@@ -1,11 +1,14 @@
 import { Button, Input, Layout, Text } from '@ui-kitten/components';
 import React, { useEffect, useState } from 'react';
 import { Alert, StyleSheet } from 'react-native';
-import { useSelector } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 import sugokuApi from '../apis/sugokuApi';
+import secondConverter from '../helpers/secondConverter';
 
 // import sudoku from '../dummy-data';
 import encodeParams from '../helpers/sugokuEncoder';
+import { countReset, countUp } from '../stores/actions/counterAction';
+import { clearGame, fetchBoard } from '../stores/actions/gameAction';
 
 const styles = StyleSheet.create({
   root: {
@@ -15,6 +18,8 @@ const styles = StyleSheet.create({
   },
   title: {
     marginBottom: 20,
+    justifyContent: 'center',
+    alignItems: 'center',
   },
   board: {
     justifyContent: 'center',
@@ -34,41 +39,56 @@ const styles = StyleSheet.create({
   },
 });
 
+let timer;
+
 const BoardScreen = (props) => {
   const {
     navigation,
     route: { params },
   } = props;
 
-  const [sudoku, setSudoku] = useState({ board: [[]] });
+  // const [sudoku, setSudoku] = useState({ board: [[]] });
   const [board, setBoard] = useState([[]]);
   const [isLoading, setIsLoading] = useState(true);
   const [isSolved, setIsSolved] = useState(false);
+  const [isGameOn, setIsGameOn] = useState(true);
+  const [isDisableSubmit, setIsDisableSubmit] = useState(false);
 
   const playerName = useSelector((state) => state.player.name);
+  const sudokuBoard = useSelector((state) => state.game.board);
+  const counter = useSelector((state) => state.counter);
+
+  const dispatch = useDispatch();
 
   useEffect(() => {
-    async function fetchSudoku() {
-      const result = await sugokuApi({
-        url: '/board',
-        method: 'GET',
-        params: { difficulty: params.difficulty },
-      });
+    timer = setInterval(() => {
+      dispatch(countUp());
+      console.log(counter);
+    }, 1000);
 
-      setSudoku(result.data);
-      setIsLoading(false);
-    }
-    fetchSudoku();
+    return () => {
+      console.log('unmount');
+      dispatch(clearGame());
+      dispatch(countReset());
+      clearInterval(timer);
+    };
   }, []);
 
   useEffect(() => {
-    return () => {};
-  }, [playerName]);
+    console.log(JSON.stringify(sudokuBoard));
+    dispatch(fetchBoard(params.difficulty));
+  }, [dispatch]);
 
   useEffect(() => {
-    const parsedBoard = JSON.parse(JSON.stringify(sudoku.board));
+    const sudokuString = JSON.stringify(sudokuBoard);
+    const parsedBoard = JSON.parse(sudokuString);
+    console.log(sudokuString);
     setBoard(parsedBoard);
-  }, [sudoku]);
+
+    return () => {
+      setIsLoading(false);
+    };
+  }, [sudokuBoard]);
 
   function onBoardChange(row, col, val) {
     const tempBoard = JSON.parse(JSON.stringify(board));
@@ -80,6 +100,8 @@ const BoardScreen = (props) => {
     const body = { board };
     const data = encodeParams(body);
 
+    setIsDisableSubmit(true);
+
     try {
       const solution = await sugokuApi({
         url: '/validate',
@@ -90,7 +112,13 @@ const BoardScreen = (props) => {
 
       Alert.alert('Sugoku Validation', solution.data.status);
 
-      if (solution.data.status === 'solved') setIsSolved(true);
+      setIsDisableSubmit(false);
+
+      if (solution.data.status === 'solved') {
+        clearInterval(timer);
+        setIsSolved(true);
+        setIsGameOn(false);
+      }
     } catch (err) {
       console.warn(err);
     }
@@ -98,11 +126,14 @@ const BoardScreen = (props) => {
 
   async function handleSubmit() {
     navigation.navigate('Finish');
+    clearInterval(timer);
   }
 
   async function handleSolveIt() {
-    const data = { board };
+    const data = { board: sudokuBoard };
     const body = encodeParams(data);
+
+    setIsDisableSubmit(true);
 
     try {
       const solution = await sugokuApi({
@@ -116,8 +147,7 @@ const BoardScreen = (props) => {
       setBoard(parsedBoard);
 
       Alert.alert('Sugoku Validation', solution.data.status);
-
-      if (solution.data.status === 'solved') setIsSolved(true);
+      setIsDisableSubmit(false);
     } catch (err) {
       console.warn(err);
     }
@@ -126,8 +156,12 @@ const BoardScreen = (props) => {
   return (
     <Layout style={styles.root}>
       <Layout style={styles.title}>
-        <Text>Board</Text>
-        <Text>{playerName}</Text>
+        <Text category="h3">{secondConverter(counter)}</Text>
+        <Text category="c1">{params.difficulty}</Text>
+      </Layout>
+
+      <Layout style={styles.title}>
+        <Text category="s1">{playerName}</Text>
       </Layout>
 
       {isLoading ? (
@@ -139,7 +173,7 @@ const BoardScreen = (props) => {
               return (
                 <Layout style={styles.column} key={rowIdx}>
                   {row.map((col, colIdx) => {
-                    const isDisable = sudoku.board[rowIdx][colIdx] !== 0;
+                    const isDisable = sudokuBoard[rowIdx][colIdx] !== 0 || !isGameOn;
                     return (
                       <Input
                         textStyle={styles.box}
@@ -161,6 +195,7 @@ const BoardScreen = (props) => {
               appearance="outline"
               status={isSolved ? 'success' : 'warning'}
               onPress={isSolved ? handleSubmit : handleApply}
+              disabled={isDisableSubmit}
             >
               {(evaProps) => <Text {...evaProps}>{isSolved ? 'Submit' : 'Apply'}</Text>}
             </Button>
@@ -169,6 +204,7 @@ const BoardScreen = (props) => {
               appearance="outline"
               status="info"
               onPress={handleSolveIt}
+              disabled={isDisableSubmit}
             >
               {(evaProps) => <Text {...evaProps}>Just solve it!</Text>}
             </Button>
