@@ -1,7 +1,8 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import { StyleSheet } from 'react-native';
 import { Button, Layout, Text } from '@ui-kitten/components';
-import { useSelector } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
+import { pushBoard } from '../stores/actions/leaderboardAction';
 
 const styles = StyleSheet.create({
   root: {
@@ -26,6 +27,13 @@ const FinishScreen = (props) => {
   const playerName = useSelector((state) => state.player.name);
   const difficulty = useSelector((state) => state.game.difficulty);
   const count = useSelector((state) => state.counter.count);
+
+  const dispatch = useDispatch();
+
+  useEffect(() => {
+    dispatch(pushBoard(difficulty));
+    return () => {};
+  }, []);
 
   return (
     <Layout style={styles.root}>
