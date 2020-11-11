@@ -25,7 +25,7 @@ const FinishScreen = (props) => {
 
   const playerName = useSelector((state) => state.player.name);
   const difficulty = useSelector((state) => state.game.difficulty);
-  const counter = useSelector((state) => state.counter);
+  const count = useSelector((state) => state.counter.count);
 
   return (
     <Layout style={styles.root}>
@@ -37,7 +37,7 @@ const FinishScreen = (props) => {
         <Text>
           Has completed game in <Text category="h5">`{difficulty}`</Text> mode within
         </Text>
-        <Text category="h3">{counter}</Text>
+        <Text category="h3">{count}</Text>
         <Text category="s2">seconds</Text>
       </Layout>
       <Layout>

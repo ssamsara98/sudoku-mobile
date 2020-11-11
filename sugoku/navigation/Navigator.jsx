@@ -3,6 +3,7 @@ import React from 'react';
 import { NavigationContainer } from '@react-navigation/native';
 import { createStackNavigator } from '@react-navigation/stack';
 import { createDrawerNavigator } from '@react-navigation/drawer';
+import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import { Ionicons } from '@expo/vector-icons';
 
 import HomeScreen from '../screens/HomeScreen';
@@ -12,6 +13,45 @@ import LeaderBoardScreen from '../screens/LeaderBoardScreen';
 
 const Stack = createStackNavigator();
 const Drawer = createDrawerNavigator();
+const Tab = createBottomTabNavigator();
+
+function TabBarIcon(props) {
+  return <Ionicons size={22} {...props} />;
+}
+
+const LeaderBoardTab = () => {
+  return (
+    <Tab.Navigator initialRouteName="LeaderboardMedium" tabBarOptions={{}}>
+      <Tab.Screen
+        name="LeaderboardEasy"
+        children={(navProps) => <LeaderBoardScreen {...navProps} mode="easy" />}
+        options={{
+          title: 'Easy',
+          tabBarLabel: 'Easy Mode',
+          tabBarIcon: ({ color }) => <TabBarIcon name="ios-star-outline" color={color} />,
+        }}
+      />
+      <Tab.Screen
+        name="LeaderboardMedium"
+        children={(navProps) => <LeaderBoardScreen {...navProps} mode="medium" />}
+        options={{
+          title: 'Medium',
+          tabBarLabel: 'Medium Mode',
+          tabBarIcon: ({ color }) => <TabBarIcon name="ios-star-outline" color={color} />,
+        }}
+      />
+      <Tab.Screen
+        name="LeaderboardHard"
+        children={(navProps) => <LeaderBoardScreen {...navProps} mode="hard" />}
+        options={{
+          title: 'Hard',
+          tabBarLabel: 'Hard Mode',
+          tabBarIcon: ({ color }) => <TabBarIcon name="ios-star-outline" color={color} />,
+        }}
+      />
+    </Tab.Navigator>
+  );
+};
 
 const HomeDrawer = () => {
   return (
@@ -28,7 +68,7 @@ const HomeDrawer = () => {
       />
       <Drawer.Screen
         name="LeaderBoard"
-        component={LeaderBoardScreen}
+        component={LeaderBoardTab}
         options={{
           title: 'Leader Board',
           drawerIcon: (drawerConfig) => {

@@ -10,10 +10,12 @@ const styles = StyleSheet.create({
   },
 });
 
-const LeaderBoardScreen = () => {
+const LeaderBoardScreen = (props) => {
+  const { mode } = props;
   return (
     <Layout style={styles.root}>
       <Text category="h1">Leader Board Screen</Text>
+      <Text category="h3">{mode}</Text>
     </Layout>
   );
 };

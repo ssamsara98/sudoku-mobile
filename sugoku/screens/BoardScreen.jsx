@@ -7,8 +7,8 @@ import secondConverter from '../helpers/secondConverter';
 
 // import sudoku from '../dummy-data';
 import encodeParams from '../helpers/sugokuEncoder';
+import useGameHooks from '../hooks/useGameHook';
 import { countReset, countUp } from '../stores/actions/counterAction';
-import { clearGame, fetchBoard } from '../stores/actions/gameAction';
 
 const styles = StyleSheet.create({
   root: {
@@ -47,48 +47,26 @@ const BoardScreen = (props) => {
     route: { params },
   } = props;
 
-  // const [sudoku, setSudoku] = useState({ board: [[]] });
-  const [board, setBoard] = useState([[]]);
-  const [isLoading, setIsLoading] = useState(true);
   const [isSolved, setIsSolved] = useState(false);
   const [isGameOn, setIsGameOn] = useState(true);
   const [isDisableSubmit, setIsDisableSubmit] = useState(false);
 
+  const [isLoading, sudokuBoard, board, setBoard] = useGameHooks(params.difficulty);
+
   const playerName = useSelector((state) => state.player.name);
-  const sudokuBoard = useSelector((state) => state.game.board);
-  const counter = useSelector((state) => state.counter);
+  const count = useSelector((state) => state.counter.count);
 
   const dispatch = useDispatch();
 
   useEffect(() => {
     timer = setInterval(() => {
       dispatch(countUp());
-      console.log(counter);
     }, 1000);
-
     return () => {
-      console.log('unmount');
-      dispatch(clearGame());
-      dispatch(countReset());
       clearInterval(timer);
+      dispatch(countReset());
     };
   }, []);
-
-  useEffect(() => {
-    console.log(JSON.stringify(sudokuBoard));
-    dispatch(fetchBoard(params.difficulty));
-  }, [dispatch]);
-
-  useEffect(() => {
-    const sudokuString = JSON.stringify(sudokuBoard);
-    const parsedBoard = JSON.parse(sudokuString);
-    console.log(sudokuString);
-    setBoard(parsedBoard);
-
-    return () => {
-      setIsLoading(false);
-    };
-  }, [sudokuBoard]);
 
   function onBoardChange(row, col, val) {
     const tempBoard = JSON.parse(JSON.stringify(board));
@@ -156,7 +134,7 @@ const BoardScreen = (props) => {
   return (
     <Layout style={styles.root}>
       <Layout style={styles.title}>
-        <Text category="h3">{secondConverter(counter)}</Text>
+        <Text category="h3">{secondConverter(count)}</Text>
         <Text category="c1">{params.difficulty}</Text>
       </Layout>
 
