@@ -2,8 +2,9 @@ import React, { useEffect, useState } from 'react';
 import { StyleSheet, TouchableWithoutFeedback } from 'react-native';
 import { Button, Icon, Input, Layout, Text } from '@ui-kitten/components';
 import { useDispatch, useSelector } from 'react-redux';
+import { SafeAreaView } from 'react-native-safe-area-context';
 
-import { setName } from '../stores/actions/playerAction';
+import { setName, clearName } from '../stores/actions/playerAction';
 
 const styles = StyleSheet.create({
   layout: {
@@ -28,8 +29,6 @@ const styles = StyleSheet.create({
     width: '100%',
   },
   difficultyButton: {
-    // width: '100%',
-    // height: 100,
     width: 200,
     marginBottom: 15,
   },
@@ -51,6 +50,7 @@ const HomeScreen = (props) => {
   const renderIcon = (iconProps) => (
     <TouchableWithoutFeedback
       onPress={() => {
+        dispatch(clearName());
         setPlayerName('');
       }}
     >
@@ -68,47 +68,49 @@ const HomeScreen = (props) => {
   }
 
   return (
-    <Layout style={styles.layout}>
-      <Layout style={styles.nameAndDifficulty}>
-        <Layout style={styles.name}>
-          <Input
-            // textStyle={{ textAlign: 'center' }}
-            label={(evaProps) => <Text {...evaProps}>Name</Text>}
-            caption={(evaProps) => <Text {...evaProps}>Your Name</Text>}
-            placeholder="Insert your name!"
-            accessoryRight={renderIcon}
-            value={playerName}
-            onChangeText={onPlayerNameChange}
-          />
-        </Layout>
-        <Layout style={styles.difficulty}>
-          <Button
-            style={styles.difficultyButton}
-            status="success"
-            onPress={() => handlePlayGame('easy')}
-            disabled={isDisable}
-          >
-            {(evaProps) => <Text {...evaProps}>Easy</Text>}
-          </Button>
-          <Button
-            style={styles.difficultyButton}
-            status="warning"
-            onPress={() => handlePlayGame('medium')}
-            disabled={isDisable}
-          >
-            {(evaProps) => <Text {...evaProps}>Medium</Text>}
-          </Button>
-          <Button
-            style={styles.difficultyButton}
-            status="danger"
-            onPress={() => handlePlayGame('hard')}
-            disabled={isDisable}
-          >
-            {(evaProps) => <Text {...evaProps}>Hard</Text>}
-          </Button>
+    <SafeAreaView style={{ flex: 1 }}>
+      <Layout style={styles.layout}>
+        <Layout style={styles.nameAndDifficulty}>
+          <Layout style={styles.name}>
+            <Input
+              // textStyle={{ textAlign: 'center' }}
+              label={(evaProps) => <Text {...evaProps}>Name</Text>}
+              caption={(evaProps) => <Text {...evaProps}>Your Name</Text>}
+              placeholder="Insert your name!"
+              accessoryRight={renderIcon}
+              value={playerName}
+              onChangeText={onPlayerNameChange}
+            />
+          </Layout>
+          <Layout style={styles.difficulty}>
+            <Button
+              style={styles.difficultyButton}
+              status="success"
+              onPress={() => handlePlayGame('easy')}
+              disabled={isDisable}
+            >
+              {(evaProps) => <Text {...evaProps}>Easy</Text>}
+            </Button>
+            <Button
+              style={styles.difficultyButton}
+              status="warning"
+              onPress={() => handlePlayGame('medium')}
+              disabled={isDisable}
+            >
+              {(evaProps) => <Text {...evaProps}>Medium</Text>}
+            </Button>
+            <Button
+              style={styles.difficultyButton}
+              status="danger"
+              onPress={() => handlePlayGame('hard')}
+              disabled={isDisable}
+            >
+              {(evaProps) => <Text {...evaProps}>Hard</Text>}
+            </Button>
+          </Layout>
         </Layout>
       </Layout>
-    </Layout>
+    </SafeAreaView>
   );
 };
 
