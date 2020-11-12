@@ -19,15 +19,19 @@ const App = () => {
     return appLoading;
   } else {
     return (
-      <Provider store={store}>
+      <ApplicationProvider {...eva} theme={{ ...eva.dark, ...theme }}>
         <IconRegistry icons={EvaIconsPack} />
-        <ApplicationProvider {...eva} theme={{ ...eva.dark, ...theme }}>
-          <StatusBar />
-          <Navigator />
-        </ApplicationProvider>
-      </Provider>
+        <StatusBar />
+        <Navigator />
+      </ApplicationProvider>
     );
   }
 };
 
-export default App;
+const WrappedApp = () => (
+  <Provider store={store}>
+    <App />
+  </Provider>
+);
+
+export default WrappedApp;

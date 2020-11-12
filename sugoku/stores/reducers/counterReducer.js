@@ -23,8 +23,6 @@ function countDown(state) {
 }
 
 function setCountIntervalUp(state, dispatch) {
-  console.log(dispatch);
-  console.log(state);
   const timer = setInterval(() => {
     dispatch({ type: COUNTER__COUNT_UP });
   }, 1000);
@@ -39,7 +37,6 @@ function setCountIntervalDown(state, dispatch) {
 }
 
 function clearCountInterval(state) {
-  console.log(state.timer);
   clearInterval(state.timer);
   return { ...state, timer: null };
 }

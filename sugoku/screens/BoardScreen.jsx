@@ -1,11 +1,19 @@
-import { Button, Input, Layout, Text } from '@ui-kitten/components';
+import {
+  Button,
+  Icon,
+  Input,
+  Layout,
+  Text,
+  TopNavigation,
+  TopNavigationAction,
+} from '@ui-kitten/components';
 import React, { useEffect, useState } from 'react';
 import { Alert, StyleSheet } from 'react-native';
+import { SafeAreaView } from 'react-native-safe-area-context';
 import { useDispatch, useSelector } from 'react-redux';
+
 import sugokuApi from '../apis/sugokuApi';
 import secondConverter from '../helpers/secondConverter';
-
-// import sudoku from '../dummy-data';
 import encodeParams from '../helpers/sugokuEncoder';
 import useGameHooks from '../hooks/useGameHook';
 import { countReset, countUp } from '../stores/actions/counterAction';
@@ -182,7 +190,7 @@ const BoardScreen = (props) => {
               appearance="outline"
               status="info"
               onPress={handleSolveIt}
-              disabled={isDisableSubmit}
+              disabled={isDisableSubmit || isSolved}
             >
               {(evaProps) => <Text {...evaProps}>Just solve it!</Text>}
             </Button>
@@ -191,6 +199,34 @@ const BoardScreen = (props) => {
       )}
     </Layout>
   );
+};
+
+export const boardScreenSetting = {
+  header: (props) => {
+    const { navigation } = props;
+    return (
+      <SafeAreaView>
+        <TopNavigation
+          alignment="center"
+          accessoryLeft={() => (
+            <TopNavigationAction
+              icon={() => {
+                return (
+                  <Icon style={{ width: 32, height: 32, tintColor: 'white' }} name="arrow-back" />
+                );
+              }}
+              onPress={navigation.goBack}
+            />
+          )}
+          title={() => (
+            <Text category="h2" status="primary">
+              Game Board
+            </Text>
+          )}
+        />
+      </SafeAreaView>
+    );
+  },
 };
 
 export default BoardScreen;

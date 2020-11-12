@@ -7,8 +7,8 @@ import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import { Ionicons } from '@expo/vector-icons';
 
 import HomeScreen from '../screens/HomeScreen';
-import BoardScreen from '../screens/BoardScreen';
-import FinishScreen from '../screens/FinishScreen';
+import BoardScreen, { boardScreenSetting } from '../screens/BoardScreen';
+import FinishScreen, { finishScreenSetting } from '../screens/FinishScreen';
 import LeaderBoardScreen from '../screens/LeaderBoardScreen';
 
 const Stack = createStackNavigator();
@@ -21,7 +21,7 @@ function TabBarIcon(props) {
 
 const LeaderBoardTab = () => {
   return (
-    <Tab.Navigator initialRouteName="LeaderboardMedium" tabBarOptions={{}}>
+    <Tab.Navigator initialRouteName="LeaderboardMedium">
       <Tab.Screen
         name="LeaderboardEasy"
         children={(navProps) => <LeaderBoardScreen {...navProps} mode="easy" />}
@@ -87,10 +87,10 @@ const GameStack = () => {
       <Stack.Screen
         name="Board"
         component={BoardScreen}
-        options={{ title: 'Game Board' }}
+        options={boardScreenSetting}
         initialParams={{ difficulty: 'easy' }}
       />
-      <Stack.Screen name="Finish" component={FinishScreen} options={{ title: 'Finish Screen' }} />
+      <Stack.Screen name="Finish" component={FinishScreen} options={finishScreenSetting} />
     </Stack.Navigator>
   );
 };

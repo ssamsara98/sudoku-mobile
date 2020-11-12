@@ -1,7 +1,9 @@
 import React, { useEffect } from 'react';
-import { StyleSheet } from 'react-native';
-import { Button, Layout, Text } from '@ui-kitten/components';
+import { BackHandler, StyleSheet, ToastAndroid } from 'react-native';
+import { Button, Layout, Text, TopNavigation } from '@ui-kitten/components';
+import { SafeAreaView } from 'react-native-safe-area-context';
 import { useDispatch, useSelector } from 'react-redux';
+
 import { pushBoard } from '../stores/actions/leaderboardAction';
 
 const styles = StyleSheet.create({
@@ -17,7 +19,6 @@ const styles = StyleSheet.create({
   },
   congratulationText: {
     marginBottom: 10,
-    color: '#F66723',
   },
 });
 
@@ -32,18 +33,30 @@ const FinishScreen = (props) => {
 
   useEffect(() => {
     dispatch(pushBoard(difficulty));
-    return () => {};
+    BackHandler.addEventListener('hardwareBackPress', handleBackButton);
+    return () => {
+      BackHandler.removeEventListener('hardwareBackPress', handleBackButton);
+    };
   }, []);
+
+  function handleBackButton() {
+    ToastAndroid.show('Back button is pressed', ToastAndroid.SHORT);
+    return true;
+  }
 
   return (
     <Layout style={styles.root}>
       <Layout style={styles.congratulation}>
-        <Text style={styles.congratulationText} category="h1">
+        <Text style={styles.congratulationText} category="h1" status="warning">
           Congratulation
         </Text>
         <Text category="h2">{playerName}</Text>
         <Text>
-          Has completed game in <Text category="h5">`{difficulty}`</Text> mode within
+          Has completed game in{' '}
+          <Text category="h5" status="success">
+            `{difficulty}`
+          </Text>{' '}
+          mode within
         </Text>
         <Text category="h3">{count}</Text>
         <Text category="s2">seconds</Text>
@@ -61,6 +74,23 @@ const FinishScreen = (props) => {
       </Layout>
     </Layout>
   );
+};
+
+export const finishScreenSetting = {
+  header: () => {
+    return (
+      <SafeAreaView>
+        <TopNavigation
+          alignment="center"
+          title={() => (
+            <Text category="h2" status="primary">
+              Finish Screen
+            </Text>
+          )}
+        />
+      </SafeAreaView>
+    );
+  },
 };
 
 export default FinishScreen;
