@@ -14,5 +14,8 @@ max_line_length = 100
 trim_trailing_whitespace = false
 max_line_length = off
 
-[*.{js,jsx,ts,tsx}]
+[*.{js,jsx,ts,tsx,vue}]
 quote_type = single
+
+[*.{env,env.local,env.*.local}]
+insert_final_newline = false
